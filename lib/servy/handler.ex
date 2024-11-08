@@ -21,35 +21,39 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
+  def route(conv) do
+    route(conv, conv.method, conv.path)
+  end
+
+  def route(conv, "DELETE", "/bears/" <> _id) do
     BearController.delete(conv, conv.params)
   end
 
-  def route(%Conv{ method: "GET", path: "/wildthings" } = conv) do
+  def route(conv, "GET", "/wildthings") do
     %{ conv | status: 200, resp_body: "Bears, Lions, Tigers" }
   end
 
-  def route(%Conv{ method: "GET", path: "/bears" } = conv) do
+  def route(conv, "GET", "/bears") do
     BearController.index(conv)
   end
 
-  def route(%Conv{ method: "GET", path: "/bears/" <> id } = conv) do
+  def route(conv, "GET", "/bears/" <> id) do
     params = Map.put(conv.params, "id", id)
     BearController.show(conv, params)
   end
 
-  def route(%Conv{method: "POST", path: "/bears"} = conv) do
+  def route(conv, "POST", "/bears") do
     BearController.create(conv, conv.params)
   end
 
-  def route(%Conv{method: "GET", path: "/about"} = conv) do
+  def route(conv, "GET", "/about") do
       @pages_path
       |> Path.join("about.html")
       |> File.read
       |> handle_file(conv)
   end
 
-  def route(%Conv{ path: path } = conv) do
+  def route(conv, method: _method, path: path) do
     %{ conv | status: 404, resp_body: "No #{path} here!"}
   end
 
@@ -79,30 +83,6 @@ end
 
 request = """
 GET /wildthings HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-response = Servy.Handler.handle(request)
-
-IO.puts response
-
-request = """
-GET /bigfoot HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-response = Servy.Handler.handle(request)
-
-IO.puts response
-
-request = """
-GET /wildlife HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
