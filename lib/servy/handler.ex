@@ -4,6 +4,7 @@ defmodule Servy.Handler do
 
   alias Servy.Conv
   alias Servy.BearController
+  alias Servy.Api.BearController, as: ApiBearController
 
   @pages_path Path.expand("../../pages", __DIR__)
 
@@ -18,6 +19,7 @@ defmodule Servy.Handler do
     |> log
     |> route
     |> track
+    |> put_content_length
     |> format_response
   end
 
@@ -33,6 +35,10 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "Bears, Lions, Tigers" }
   end
 
+  def route(conv, "GET", "/api/bears") do
+    Servy.Api.BearController.index(conv)
+  end
+
   def route(conv, "GET", "/bears") do
     BearController.index(conv)
   end
@@ -44,6 +50,18 @@ defmodule Servy.Handler do
 
   def route(conv, "POST", "/bears") do
     BearController.create(conv, conv.params)
+  end
+
+  def route(conv, "POST", "/api/bears") do
+    ApiBearController.create(conv, conv.params)
+  end
+
+  def route(conv, "GET", "/pages" <> name) do
+    @pages_path
+      |> Path.join("#{name}")
+      |> File.read
+      |> handle_file(conv)
+      |> markdown_to_html
   end
 
   def route(conv, "GET", "/about") do
@@ -69,11 +87,28 @@ defmodule Servy.Handler do
     %{ conv | status: 500, resp_body: "File error: #{reason}" }
   end
 
+  def markdown_to_html(%Conv{status: 200} = conv) do
+    %{ conv | resp_body: Earmark.as_html!(conv.resp_body) }
+  end
+
+  def markdown_to_html(%Conv{} = conv), do: conv
+
+  def put_content_length(conv) do
+    headers = Map.put(conv.resp_headers, "Content-Length", String.length(conv.resp_body))
+    %{conv | resp_headers: headers}
+  end
+
+  def format_response_headers(conv) do
+    for {header_key, header_value} <- conv.resp_headers["Content-Length"] do
+      "#{header_key}: #{header_value}\r"
+    end |> Enum.sort |> Enum.reverse |> Enum.join("\n")
+  end
+
+
   def format_response(%Conv{} = conv) do
     """
     HTTP/1.1 #{Conv.full_status(conv)}\r
-    Content-Type: text/html\r
-    Content-Length: #{String.length(conv.resp_body)}\r
+    #{format_response_headers(conv)}
     \r
     #{conv.resp_body}
     """
