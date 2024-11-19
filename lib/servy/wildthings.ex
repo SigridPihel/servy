@@ -1,7 +1,7 @@
 defmodule Servy.Wildthings do
   alias Servy.Bear
 
-  @pages_path Path.expand("../../db", __DIR__)
+  @pages_path Path.expand("../servy/db", __DIR__)
 
   def list_bears do
 

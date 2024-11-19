@@ -23,6 +23,11 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+  @spec route(%{
+          :method => <<_::24, _::_*8>>,
+          :path => <<_::48, _::_*8>>,
+          optional(any()) => any()
+        }) :: map()
   def route(conv) do
     route(conv, conv.method, conv.path)
   end
@@ -99,7 +104,8 @@ defmodule Servy.Handler do
   end
 
   def format_response_headers(conv) do
-    for {header_key, header_value} <- conv.resp_headers["Content-Length"] do
+
+    for {header_key, header_value} <- conv.resp_headers do
       "#{header_key}: #{header_value}\r"
     end |> Enum.sort |> Enum.reverse |> Enum.join("\n")
   end
