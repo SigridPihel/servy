@@ -23,7 +23,8 @@ defmodule Servy.Mixfile do
     [
       {:poison, "~> 6.0"},
       {:faker, "~> 0.18.0"},
-      {:earmark, "~> 1.4"}
+      {:earmark, "~> 1.4"},
+      {:httpoison, "~> 2.0"}
     ]
   end
 end
