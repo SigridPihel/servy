@@ -7,18 +7,22 @@ defmodule HttpServerTest do
 
     spawn(HttpServer, :start, [4014])
 
-    url = "http://localhost:4014/wildthings"
+    urls = [
+      "http://localhost:4014/wildthings",
+      "http://localhost:4014/bears",
+      "http://localhost:4014/bears/1",
+      "http://localhost:4014/wildlife",
+      "http://localhost:4014/api/bears"
+    ]
 
-    1..5
-    |> Enum.map(fn(_) -> Task.async(fn -> HTTPoison.get(url) end) end)
+    urls
+    |> Enum.map(fn url -> Task.async(fn -> HTTPoison.get(url) end) end)
     |> Enum.map(fn task -> Task.await(task) end)
     |> Enum.map(&assert_successful_response/1)
-
     end
 
     defp assert_successful_response({:ok, response}) do
       assert response.status_code == 200
-      assert response.body == "Bears, Lions, Tigers"
-
+      #assert response.body == "Bears, Lions, Tigers"
   end
 end
