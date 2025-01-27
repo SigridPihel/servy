@@ -25,6 +25,13 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+
+  def route(%Conv{method: "GET", path: "/404s"} = conv) do
+    counts = Servy.FourOhFourCounter.get_counts()
+
+    %{ conv | status: 200, resp_body: inspect counts }
+  end
+
   def route(%Conv{method: "POST", path: "/pledges"} = conv) do
     Servy.PledgeController.create(conv, conv.params)
   end
@@ -64,14 +71,16 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "Awake!" }
   end
 
-  @spec route(%{
-          :method => <<_::24, _::_*8>>,
-          :path => <<_::48, _::_*8>>,
-          optional(any()) => any()
-        }) :: map()
-  def route(conv) do
-    route(conv, conv.method, conv.path)
-  end
+  # @spec route(%{
+  #         :method => <<_::24, _::_*8>>,
+  #         :path => <<_::48, _::_*8>>,
+  #         optional(any()) => any()
+  #       }) :: map()
+  # def route(conv) do
+  #   IO.puts "7"
+
+  #   route(conv, conv.method, conv.path)
+  # end
 
   def route(conv, "DELETE", "/bears/" <> _id) do
     BearController.delete(conv, conv.params)
@@ -117,7 +126,7 @@ defmodule Servy.Handler do
       |> handle_file(conv)
   end
 
-  def route(conv, method: _method, path: path) do
+  def route(%Conv{path: path} = conv) do
     %{ conv | status: 404, resp_body: "No #{path} here!"}
   end
 

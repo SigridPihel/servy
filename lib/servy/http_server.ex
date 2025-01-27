@@ -61,6 +61,7 @@ defmodule Servy.HttpServer do
   Receives a request on the `client_socket`.
   """
   def read_request(client_socket) do
+
     {:ok, request} = :gen_tcp.recv(client_socket, 0) # all available bytes
 
     IO.puts "➡️  Received request:\n"
