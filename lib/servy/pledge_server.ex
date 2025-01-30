@@ -36,7 +36,7 @@ end
 defmodule Servy.PledgeServer do
 
   #@name __MODULE__
-  @name :pledge_server18
+  @name :pledge_server102
 
   alias Servy.GenericServer
 
