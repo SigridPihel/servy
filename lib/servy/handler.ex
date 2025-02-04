@@ -50,24 +50,27 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
-    task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
+    # task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
 
-    snapshots =
-      ["cam-1", "cam-2", "cam-3"]
-      |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
-      |> Enum.map(&Task.await/1)
+    # snapshots =
+    #   ["cam-1", "cam-2", "cam-3"]
+    #   |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+    #   |> Enum.map(&Task.await/1)
 
-    where_is_bigfoot =
-      case Task.yield(task, :timer.seconds(5)) do
-        {:ok, result} ->
-          result
-        nil ->
-          Logger.warn "Timed out!"
-          Task.shutdown(task)
-      end
+    # where_is_bigfoot =
+    #   case Task.yield(task, :timer.seconds(5)) do
+    #     {:ok, result} ->
+    #       result
+    #     nil ->
+    #       Logger.warn "Timed out!"
+    #       Task.shutdown(task)
+    #   end
 
-    render(conv, "sensors.eex", snapshots: snapshots, location: where_is_bigfoot)
-    #%{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot}}
+    # render(conv, "sensors.eex", snapshots: snapshots, location: where_is_bigfoot)
+
+    sensor_data = Servy.SensorServer.get_sensor_data()
+
+    %{ conv | status: 200, resp_body: inspect sensor_data }
   end
 
   def route(%Conv{ method: "GET", path: "/kaboom" } = conv) do
