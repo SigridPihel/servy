@@ -26,9 +26,9 @@ defmodule Servy.GenericServer do
       {:cast, message} ->
         new_state = callback_module.handle_cast(message, state)
         listen_loop(new_state, callback_module)
-      unexpected ->
-        IO.puts "Unexpected messaged: #{inspect unexpected}"
-        listen_loop(state, callback_module)
+      other ->
+        new_state = callback_module.handle_info(other, state)
+        listen_loop(new_state, callback_module)
     end
   end
 end
@@ -99,13 +99,18 @@ defmodule Servy.PledgeServerHandRolled do
     {id, new_state}
   end
 
+  def handle_info(other, state) do
+    IO.puts "Can't touch this! #{inspect other}"
+    state
+  end
+
   defp send_pledge_to_service(_name, _amount) do
     # CODE GOES HERE TO SEND PLEDGE TO EXTERNAL SERVICE
     {:ok, "pledge-#{:rand.uniform(1000)}"}
   end
 end
 
-# alias Servy.PledgeServerHandRolled
+alias Servy.PledgeServerHandRolled
 
 # pid = PledgeServerHandRolled.start()
 
@@ -124,4 +129,4 @@ end
 
 # IO.inspect PledgeServerHandRolled.total_pledged()
 
-# #IO.inspect Process.info(pid, :messages)
+#IO.inspect Process.info(pid, :messages)

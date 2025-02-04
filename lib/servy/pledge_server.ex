@@ -60,7 +60,8 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_cast({:set_cache_size, size}, state) do
-    new_state = %{ state | cache_size: size}
+    resized_cache = Enum.take(state.pledges, size)
+    new_state = %{state | cache_size: size, pledges: resized_cache}
     {:noreply, new_state}
   end
 
@@ -108,21 +109,21 @@ alias Servy.PledgeServer
 
 {:ok, pid} = PledgeServer.start()
 
-IO.inspect(:sys.get_status(pid), label: "getting the full status of a process vol 1")
+#IO.inspect(:sys.get_status(pid), label: "getting the full status of a process vol 1")
 
 #IO.inspect(:sys.get_state(pid), label: "current state of the process")
 
 #send pid, {:stop, "hammertime"}
 
-#PledgeServer.set_cache_size(4)
+PledgeServer.set_cache_size(4)
 
-IO.inspect(:sys.trace(pid, true), label: "turning on the tracing for the server process")
-IO.inspect(:sys.trace(pid, false), label: "turning off the tracing for the server process")
+#IO.inspect(:sys.trace(pid, true), label: "turning on the tracing for the server process")
+#IO.inspect(:sys.trace(pid, false), label: "turning off the tracing for the server process")
 
 
-IO.inspect PledgeServer.create_pledge("larry", 10)
+#IO.inspect PledgeServer.create_pledge("larry", 10)
 
-IO.inspect(:sys.get_status(pid), label: "getting the full status of a process vol 2")
+#IO.inspect(:sys.get_status(pid), label: "getting the full status of a process vol 2")
 
 #IO.inspect(:sys.get_state(pid), label: "current state of the process")
 
