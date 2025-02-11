@@ -10,9 +10,9 @@ defmodule Servy.PledgeServer do
 
   # Client Interface
 
-  def start do
+  def start_link(_arg) do
     IO.puts "Starting the pledge server..."
-    GenServer.start(__MODULE__, %State{}, name: @name)
+    GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
   def create_pledge(name, amount) do
@@ -107,7 +107,7 @@ end
 
 alias Servy.PledgeServer
 
-{:ok, pid} = PledgeServer.start()
+# {:ok, pid} = PledgeServer.start()
 
 #IO.inspect(:sys.get_status(pid), label: "getting the full status of a process vol 1")
 
@@ -115,7 +115,7 @@ alias Servy.PledgeServer
 
 #send pid, {:stop, "hammertime"}
 
-PledgeServer.set_cache_size(4)
+# PledgeServer.set_cache_size(4)
 
 #IO.inspect(:sys.trace(pid, true), label: "turning on the tracing for the server process")
 #IO.inspect(:sys.trace(pid, false), label: "turning off the tracing for the server process")
@@ -134,8 +134,8 @@ PledgeServer.set_cache_size(4)
 # IO.inspect PledgeServer.create_pledge("daisy", 40)
 # IO.inspect PledgeServer.create_pledge("grace", 50)
 
-IO.inspect PledgeServer.recent_pledges()
+# IO.inspect PledgeServer.recent_pledges()
 
-IO.inspect PledgeServer.total_pledged()
+# IO.inspect PledgeServer.total_pledged()
 
 #IO.inspect Process.info(pid, :messages)
