@@ -12,7 +12,8 @@ defmodule Servy.ServicesSupervisor do
       %{
         id: {Servy.SensorServer},
         start: {Servy.SensorServer, :start_link, [60]}
-      }
+      },
+      Servy.FourOhFourCounter
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
