@@ -110,7 +110,7 @@ defmodule Servy.PledgeServerHandRolled do
   end
 end
 
-alias Servy.PledgeServerHandRolled
+# alias Servy.PledgeServerHandRolled
 
 # pid = PledgeServerHandRolled.start()
 

@@ -105,7 +105,7 @@ defmodule Servy.PledgeServer do
   end
 end
 
-alias Servy.PledgeServer
+# alias Servy.PledgeServer
 
 # {:ok, pid} = PledgeServer.start()
 
